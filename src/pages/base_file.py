@@ -7,6 +7,8 @@ from selenium.common.exceptions import (
     ElementClickInterceptedException,
     StaleElementReferenceException,
     TimeoutException,
+    ElementNotInteractableException,
+    NoSuchElementException
 )
 
 from src.locators.common_locators import commonelements
@@ -19,7 +21,13 @@ class BasePage:
 
     
     def click_on(self, locator):
-        self.wait.until(ec.element_to_be_clickable(locator)).click()
+        try:
+            element = self.wait.until(ec.element_to_be_clickable(locator))
+            element.click()
+        except (ElementClickInterceptedException, StaleElementReferenceException):
+            self.driver.execute_script("arguments[0].click();", element)
+        except TimeoutException:
+            raise Exception(f"Element not clickable: {locator}")
         
 
     def hover_on_logo(self):
@@ -27,9 +35,16 @@ class BasePage:
         self.actions.move_to_element(logo_el).perform()
 
     def enter_value(self, locator, value):
-        element = self.wait.until(ec.element_to_be_clickable(locator))
-        element.clear()
-        element.send_keys(value)
+        try:
+            element = self.wait.until(ec.element_to_be_clickable(locator))
+            element.clear()
+            element.send_keys(value)
+        except StaleElementReferenceException:
+            element = self.wait.until(ec.element_to_be_clickable(locator))
+            element.clear()
+            element.send_keys(value)
+        except TimeoutException:
+            raise Exception(f"Unable to enter value in: {locator}")
 
     def update_value(self, locator, value):
         self.enter_value(locator, value)
@@ -45,23 +60,29 @@ class BasePage:
 
     
     def search(self, element: str):
-        item = self.wait.until(ec.presence_of_element_located(commonelements.logo))
-        self.actions.move_to_element(item).perform()
-        search = self.wait.until(ec.element_to_be_clickable(commonelements.search_bar))
-        search.clear()
-        search.send_keys(element)
+        try:
+            item = self.wait.until(ec.presence_of_element_located(commonelements.logo))
+            self.actions.move_to_element(item).perform()
+            search = self.wait.until(ec.element_to_be_clickable(commonelements.search_bar))
+            search.clear()
+            search.send_keys(element)
+        except TimeoutException:
+            raise Exception("Toaster message not visible")
     
 
     def verify_value_on_table(self, element_name: str):
-        item =  self.wait.until(ec.visibility_of_element_located
-            (commonelements.element_on_table(element_name)))
-        return item
+        try:
+            element = self.wait.until(ec.visibility_of_element_located(commonelements.element_on_table(element_name)))
+            return element
+        except TimeoutException:
+             raise Exception(f"Value '{element_name}' not found in table (timeout)")
 
     def get_toaster_message(self):
-        toast = self.wait.until(ec.element_to_be_clickable(commonelements.toaster))
-        toaster = toast.text.strip()
-
-        return toaster
+        try:
+            toast = self.wait.until(ec.visibility_of_element_located(commonelements.toaster))
+            return toast.text.strip()
+        except TimeoutException:
+            raise Exception("Toaster message not visible")
 
     def _click_with_fallback(self, element):
         try:
@@ -70,19 +91,27 @@ class BasePage:
             self.driver.execute_script("arguments[0].click();", element)
     
     def select_dropdown_option(self, locator, option):
-        dropdown = self.wait.until(ec.element_to_be_clickable(locator))
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", dropdown)
-        time.sleep(0.5)
-        self._click_with_fallback(dropdown)
+        try:
+            dropdown = self.wait.until(ec.element_to_be_clickable(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", dropdown)
+            time.sleep(0.5)
+            self._click_with_fallback(dropdown)
 
-        option_locator = (
-            By.XPATH,
-            f"//p-selectitem//li//span[normalize-space()=\"{option}\"]",
-        )
-        option_element = self.wait.until(ec.visibility_of_element_located(option_locator))
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", option_element)
-        time.sleep(0.5)
-        self._click_with_fallback(option_element)
+            option_locator = (By.XPATH, f"//p-selectitem//li//span[normalize-space()=\"{option}\"]",)
+            option_element = self.wait.until(ec.visibility_of_element_located(option_locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", option_element)
+            time.sleep(0.5)
+            self._click_with_fallback(option_element)
+        except StaleElementReferenceException:
+
+            dropdown = self.wait.until(ec.element_to_be_clickable(locator))
+            dropdown.click()
+
+            option = self.wait.until(ec.element_to_be_clickable(option_locator))
+            option.click()
+
+        except TimeoutException:
+            raise Exception(f"Dropdown option '{option}' not found")
         
     
 
