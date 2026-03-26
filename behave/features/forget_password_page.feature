@@ -3,7 +3,7 @@ Feature: Forgot Password functionality
   Background:
     Given User should navigate to login page
     And User clicks on Forgot Password link
-
+  @testing
   Scenario: Navigate to forgot password page
     Then User should be redirected to forgot password page
 

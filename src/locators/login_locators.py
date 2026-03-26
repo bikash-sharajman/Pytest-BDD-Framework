@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import  By
 class LoginLocators:
 
     email_field = By.XPATH, "//input[@formcontrolname='email']"
+    # email_field = By.XPATH, "//*[@id='floatingInputValue']"
     password_field = By.XPATH, "//input[@formcontrolname='password']"
     login_button = By.XPATH, "//button[@type='submit']"
     trouble_login_button = By.XPATH, "//span[normalize-space()='Click Here']"

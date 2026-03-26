@@ -8,14 +8,13 @@ Feature: OTP Verification and Update Password
     And User clicks on Generate OTP button
     And User should redirect to OTP verification page
 
-
+  @testing
   Scenario: Verify OTP successfully
     When User enters valid OTP in both email and phone number field
     And User clicks on Verify OTP button
     Then User should redirect to update password page
     And success toaster message should be displayed
 
-  @testing
   Scenario: Verify invalid OTP
     When User enters invalid OTP in both email and phone number field
     And User try to verify with invalid otp 3 times

@@ -1,18 +1,18 @@
 import time
 from behave import given, when, then
-from src.utils.logger import get_logger
+
 from src.initialization.config_reader import confr
 from src.locators.login_locators import loginelements
 from src.locators.common_locators import commonelements
 from selenium.webdriver.support import expected_conditions as ec    
 
-log = get_logger()
-
 @when(u'User enters "{valid_password}" password')
 def step_impl(context, valid_password):
     try:
         context.log.info("Entering registered password")
-        context.wait.until(ec.element_to_be_clickable(loginelements.password_field)).send_keys(valid_password)
+        pass_field = context.wait.until(ec.presence_of_element_located(loginelements.password_field))
+        pass_field.clear()
+        pass_field.send_keys(valid_password)
 
     except Exception as e:
         context.log.error(f"Failed to enter password: {e}")

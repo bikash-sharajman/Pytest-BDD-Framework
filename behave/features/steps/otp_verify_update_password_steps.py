@@ -1,10 +1,10 @@
 import time
 from behave import given, when, then
-from behave.exception import StepNotImplementedError
 from src.locators.login_locators import loginelements
 from src.locators.common_locators import commonelements
 from selenium.webdriver.support import expected_conditions as ec
 from src.initialization.config_reader import confr
+# from selenium.webdriver.common.by import By
 
 
 
@@ -12,7 +12,12 @@ from src.initialization.config_reader import confr
 def step_impl(context, registered_email):
     try:
         context.log.info("Entering registered email")
-        context.wait.until(ec.element_to_be_clickable(loginelements.email_field)).send_keys(registered_email)
+        context.wait.until(ec.url_contains("forgot-password"))
+        element = context.wait.until(ec.presence_of_element_located(loginelements.email_field))
+        element.clear()
+        element.send_keys(registered_email)
+        # context.wait.until(ec.element_to_be_clickable(loginelements.email_field)).send_keys(registered_email)
+        # context.wait.until(ec.element_to_be_clickable(loginelements.email_field)).send_keys(registered_email)
 
     except Exception as e:
         context.log.error(f"Failed to enter email: {e}")
@@ -22,7 +27,9 @@ def step_impl(context, registered_email):
 def step_impl(context, registered_mobileno):
     try:
         context.log.info("Entering mobile number")
-        context.wait.until(ec.element_to_be_clickable(loginelements.mobile_no_field)).send_keys(registered_mobileno)
+        mob_field = context.wait.until(ec.element_to_be_clickable(loginelements.mobile_no_field))
+        mob_field.clear()
+        mob_field.send_keys(registered_mobileno)
 
     except Exception as e:
         context.log.error(f"Failed to enter mobile number: {e}")
@@ -32,7 +39,7 @@ def step_impl(context, registered_mobileno):
 def step_impl(context):
     try:
         context.log.info("Clicking on Generate OTP button")
-        context.wait.until(ec.element_to_be_clickable(loginelements.generate_otp_button)).click()
+        context.wait.until(ec.presence_of_element_located(loginelements.generate_otp_button)).click()
         context.wait.until(ec.visibility_of_element_located(commonelements.toaster))
 
     except Exception as e:
@@ -57,8 +64,8 @@ def step_impl(context):
     try:
         context.log.info("Entering valid OTP")
         otp = confr.get_email_otp()
-        email_otp = context.wait.until(ec.element_to_be_clickable(loginelements.otp_verification_email_otp_field))
-        mobile_otp = context.wait.until(ec.element_to_be_clickable(loginelements.otp_verification_mobile_otp_field))
+        email_otp = context.wait.until(ec.presence_of_element_located(loginelements.otp_verification_email_otp_field))
+        mobile_otp = context.wait.until(ec.presence_of_element_located(loginelements.otp_verification_mobile_otp_field))
 
         email_otp.clear()
         mobile_otp.clear()
@@ -98,10 +105,13 @@ def step_impl(context):
     try:
         context.log.info("Entering invalid OTP")
 
-        context.wait.until(ec.element_to_be_clickable\
-            (loginelements.otp_verification_email_otp_field)).send_keys("121212")
-        context.wait.until(ec.element_to_be_clickable\
-            (loginelements.otp_verification_mobile_otp_field)).send_keys("121212")
+        otp_email_field = context.wait.until(ec.presence_of_element_located(loginelements.otp_verification_email_otp_field))
+        otp_email_field.clear()
+        otp_email_field.send_keys("121212")
+        
+        otp_mobile_field = context.wait.until(ec.element_to_be_clickable(loginelements.otp_verification_mobile_otp_field))
+        otp_mobile_field.clear()
+        otp_mobile_field.send_keys("121212")
 
     except Exception as e:
         context.log.error(f"Failed to enter invalid OTP: {e}")
@@ -168,8 +178,9 @@ def step_impl(context):
 def step_impl(context, valid_password):
     try:
         context.log.info("Entering new password")
-        context.wait.until(ec.element_to_be_clickable\
-            (loginelements.update_password_new_password_field)).send_keys(valid_password)
+        valid_password_field = context.wait.until(ec.presence_of_element_located(loginelements.update_password_new_password_field))
+        valid_password_field.clear()
+        valid_password_field.send_keys(valid_password)
 
     except Exception as e:
         context.log.error(f"Failed to enter new password: {e}")
@@ -179,7 +190,9 @@ def step_impl(context, valid_password):
 def step_impl(context, valid_password):
     try:
         context.log.info("Entering new password")
-        context.wait.until(ec.element_to_be_clickable(loginelements.update_password_confirm_password_field)).send_keys(valid_password)
+        valid_cofirm_field = context.wait.until(ec.presence_of_element_located(loginelements.update_password_confirm_password_field))
+        valid_cofirm_field.clear()
+        valid_cofirm_field.send_keys(valid_password)
 
     except Exception as e:
         context.log.error(f"Failed to enter new password in confirm password filed.: {e}")
@@ -189,7 +202,8 @@ def step_impl(context, valid_password):
 def step_impl(context):
     try:
         context.log.info("Clicking on show password checkbox")
-        context.wait.until(ec.element_to_be_clickable(loginelements.show_password_checkbox)).click()
+        show_pass_chckbox = context.wait.until(ec.presence_of_element_located(loginelements.show_password_checkbox))
+        show_pass_chckbox.click()
 
     except Exception as e:
         context.log.error(f"Failed to click show password checkbox: {e}")

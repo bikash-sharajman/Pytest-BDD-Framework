@@ -104,5 +104,6 @@ def take_screenshot(context, step):
 def after_scenario(context, scenario):
     try:
         context.driver.quit()
+        context.driver = None
     except Exception:
         pass

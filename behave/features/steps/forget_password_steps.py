@@ -21,8 +21,8 @@ def step_impl(context):
 def step_impl(context):
     try:
         context.log.info("Clicking on Trouble logging in link")
-        context.wait.until(ec.element_to_be_clickable\
-            (loginelements.trouble_login_button)).click()
+        forget_link =context.wait.until(ec.presence_of_element_located(loginelements.trouble_login_button))
+        forget_link.click()
         
     except Exception as e:
         context.log.error(f"Failed to click Forgot Password link: {e}")
@@ -35,7 +35,7 @@ def step_impl(context):
         assert context.wait.until(ec.url_contains("forgot-password")), \
             "User is not redirected to forgot password page"
         assert context.wait.until(ec.visibility_of_element_located\
-            (loginelements.forget_password_text)).is_displayed(), \
+            (loginelements.forget_password_text)), \
             "Forgot password page text not visible"
 
     except Exception as e:
@@ -47,9 +47,9 @@ def step_impl(context):
 def step_impl(context, registered_email):
     try:
         context.log.info("Entering registered email address")
-        context.wait.until(
-            ec.element_to_be_clickable(loginelements.email_field))\
-                .send_keys(registered_email)
+        email_field = context.wait.until(ec.presence_of_element_located(loginelements.email_field))
+        email_field.clear()
+        email_field.send_keys(registered_email)
                 
     except Exception as e:
         context.log.error(f"Failed to enter email: {e}")
@@ -59,8 +59,9 @@ def step_impl(context, registered_email):
 def step_impl(context, mobile_number):
     try:
         context.log.info("Entering phone number")
-        context.wait.until(ec.element_to_be_clickable(loginelements.mobile_no_field))\
-            .send_keys(mobile_number)
+        phone_no = context.wait.until(ec.presence_of_element_located(loginelements.mobile_no_field))
+        phone_no.clear()
+        phone_no.send_keys(mobile_number)
             
     except Exception as e:
         context.log.error(f"Failed to enter phone number: {e}")
@@ -70,8 +71,8 @@ def step_impl(context, mobile_number):
 def step_impl(context):
     try:
         context.log.info("Clicking on Generate OTP button")
-        context.wait.until(ec.element_to_be_clickable\
-            (loginelements.generate_otp_button)).click()
+        generate_btn = context.wait.until(ec.presence_of_element_located(loginelements.generate_otp_button))
+        generate_btn.click()
         
     except Exception as e:
         context.log.error(f"Failed to click Generate OTP button: {e}")
@@ -108,7 +109,8 @@ def step_impl(context):
 def step_impl(context):
     try:
         context.log.info("Keeping email field blank")
-        context.wait.until(ec.element_to_be_clickable(loginelements.email_field)).click()
+        email_field = context.wait.until(ec.presence_of_element_located(loginelements.email_field))
+        email_field.clear()
         
     except Exception as e:
         context.log.error(f"Failed to handle blank email field: {e}")
@@ -132,8 +134,8 @@ def step_impl(context):
 def step_impl(context):
     try:
         context.log.info("Keeping phone number field blank")
-        context.wait.until(
-            ec.element_to_be_clickable(loginelements.mobile_no_field)).click()
+        phone_no = context.wait.until(ec.presence_of_element_located(loginelements.mobile_no_field))
+        phone_no.clear()
         
     except Exception as e:
         context.log.error(f"Failed to handle blank phone number field: {e}")
