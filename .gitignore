@@ -1,0 +1,20 @@
+.env
+requirements.txt
+.venv
+reports
+screenshots
+Drivers
+.vscode
+testsprite_tests
+chromium
+testing_code
+logs
+.selenium
+.pytest_cache
+config.ini
+pytest.ini
+
+# Python cache artifacts
+__pycache__/
+*.py[cod]
+
