@@ -18,7 +18,7 @@ class CommonLocators:
     yes_button = By.XPATH, "//button[text()='Yes']"
     toaster = By.XPATH, "//div[@id='toast-container']/div/div"
     logo = By.XPATH, "//app-vertical-navigation//ul[2]//li//a/img"
-    element_on_table = By.XPATH, "//p-table//ngb-highlight[text()='{element_name}']"
+    element_on_table = By.XPATH, "//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight"
     master_list_table = By.XPATH, "//p-table//table[contains(@class,'p-datatable')]"
     input_field_required_error_message = By.XPATH, "//p-message//div[@role='alert']//div//span"
 

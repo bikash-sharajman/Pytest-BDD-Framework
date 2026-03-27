@@ -5,9 +5,8 @@ from datetime import datetime
 def take_screenshot(driver, name: str):
     try:
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        
+    
         now = datetime.now()
-        
         screenshot_dir = os.path.join(base_dir, "screenshots", now.strftime("%Y"), now.strftime("%m"), now.strftime("%d"))
         
         os.makedirs(screenshot_dir, exist_ok=True)

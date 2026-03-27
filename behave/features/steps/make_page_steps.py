@@ -4,55 +4,22 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import WebDriverWait
-
+from src.pages.base_file import BasePage
+from src.pages.make import MakePage
 from src.initialization.config_reader import confr
 from src.locators.common_locators import commonelements
 from src.locators.login_locators import loginelements
 from src.locators.make_mstr_locators import makemodule
 
 
-# def verify_presence_of_element_on_list(context, element):
-#     item = context.wait.until(ec.element_to_be_clickable\
-#         ((By.XPATH, "//p-table//ngb-highlight[text()='{element}']")))
-    
-#     assert item == element, "Expected item not fetched"
-
-
-def search_make(context, make_name: str):
-    search = context.wait.until(ec.element_to_be_clickable(commonelements.search_bar))
-    search.clear()
-    search.send_keys(make_name)
-    search.send_keys(Keys.ENTER)
-
-
-# def _is_make_visible(context, make_name: str) -> bool:
-#     locator = (By.XPATH, _table_make_xpath(make_name))
-#     try:
-#         context.wait.until(ec.visibility_of_element_located(locator))
-#         return True
-#     except TimeoutException:
-#         return False
-
-
-# def _ensure_make_exists(context, make_name: str):
-#     _search_make(context, make_name)
-#     if _is_make_visible(context, make_name, timeout=10):
-#         return
-
-#     context.wait.until(ec.element_to_be_clickable(makemodule.add_make)).click()
-#     make_input = context.wait.until(ec.visibility_of_element_located(makemodule.make_input))
-#     make_input.clear()
-#     make_input.send_keys(make_name)
-#     context.wait.until(ec.element_to_be_clickable(commonelements.modal_save_button)).click()
-
-#     toast_text = _wait_for_toaster_text(context).lower()
-#     assert (
-#         "success" in toast_text or "already exists" in toast_text
-#     ), f"Unexpected toaster message while ensuring make exists: {toast_text}"
-
-#     _search_make(context, make_name)
-#     assert _is_make_visible(context, make_name), f'Make "{make_name}" is not visible in list.'
+def search_item(context, element: str):
+    try:
+        search = context.wait.until(ec.element_to_be_clickable(commonelements.search_bar))
+        search.clear()
+        search.send_keys(element)
+        search.send_keys(Keys.ENTER)
+    except Exception as e:
+        context.log.error(f"{element} does not appear on search result. {e}")
 
 
 @given(u'User is logged into the application')
@@ -127,12 +94,32 @@ def step_impl(context, element_name):
     
 @given(u'make "{make_name}" exists')
 def step_impl(context, make_name):
-    pass
+    try:
+        context.log.info(f"Checking if category '{make_name}' exists")
+
+        search_item(context, make_name)
+        base = BasePage(context.driver, context.wait)
+        # Verify category present in table
+        element = base.verify_value_on_table(make_name)
+
+        if element:
+            context.log.info(f"Make '{make_name}' exist.")
+            return
+        else:
+            make_page = MakePage(context.driver, context.wait)
+            make_page.create_new_make(make_name)
+            search_item(context, make_name)
+            make_search = base.verify_value_on_table(make_name)
+            assert make_search, f"Make '{make_name}' creation failed."
+
+    except Exception as e:
+        context.log.error(f"Error in Given step: {str(e)}")
+        raise
 
 
 @when(u'User search for "{element_name}"')
 def step_impl(context, element_name):
-    search_make(context, element_name)
+    search_item(context, element_name)
 
 
 @when(u'User click on view button')
@@ -150,7 +137,7 @@ def step_impl(context):
 def step_impl(context, make_name):
     value = context.wait.until(ec.visibility_of_element_located(makemodule.make_input)).get_attribute("value")
     assert value.strip() == make_name, f'Expected make name "{make_name}", but got "{value}".'
-    context.wait.until(ec.element_to_be_clickable(commonelements.page_cancel_button)).click()
+    context.wait.until(ec.element_to_be_clickable(commonelements.modal_cancel_button)).click()
 
 
 @when(u'User click on edit button')
@@ -209,11 +196,20 @@ def step_impl(context):
 
 @then(u'"{make_name}" should not be visible in the list')
 def step_impl(context, make_name):
-    # _search_make(context, make_name)
-    # assert not _is_make_visible(context, make_name, timeout=3), (
-    #     f'Make "{make_name}" is still visible in list.'
-    # )
-    pass
+    base = BasePage(context.driver, context.wait)
+    try:
+        context.log.info(f"Verifying '{make_name}' is NOT visible in the list")
+
+        result = base.verify_value_on_table(make_name)
+
+        if result == make_name:
+            raise AssertionError(f"'{make_name}' is visible in the list ❌")
+
+        context.log.info(f"'{make_name}' is not present in the list ✅")
+
+    except Exception as e:
+        context.log.error(f"Error while verifying absence of '{make_name}': {str(e)}")
+        raise
 
 @then(u'Toaster message contains "already exists" should be displayed')
 def step_impl(context):

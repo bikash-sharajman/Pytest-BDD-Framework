@@ -1,12 +1,9 @@
 import time
 from behave import given, when, then
-from behave.exception import StepNotImplementedError
 from selenium.webdriver.support import expected_conditions as ec
 from src.locators.category_mstr_locators import category
-from src.utils.logger import get_logger
 from src.locators.common_locators import commonelements
 
-log = get_logger()
 
 @given(u'User navigates to Category module')
 def step_impl(context):

@@ -1,5 +1,7 @@
+import time
 from src.pages.base_file import BasePage
 from src.locators.login_locators import loginelements
+from selenium.webdriver.support import expected_conditions as ec
 
 class Login(BasePage):
 
@@ -26,11 +28,12 @@ class Login(BasePage):
         
         
           
-    def login(self, email: str, password: str):
+    def login(self, email, password):
         self.enter_email_id(email)
         self.enter_password(password)
-        
-        self.click_login()
+        time.sleep(1)
+        self.click_on(loginelements.login_button)
+
     
     def forget_password(self, email:str, mobileno: str):
         self.click_on_trouble_login()

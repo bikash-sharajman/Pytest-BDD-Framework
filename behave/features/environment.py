@@ -10,15 +10,32 @@ from src.initialization.driver_initialization import di
 from src.locators.login_locators import loginelements
 from src.locators.common_locators import commonelements
 from src.utils.logger import get_logger
-from src.pages.make import MakeModule
+from src.pages.make import MakePage
 from src.pages.project_management_page import ProjectManagement
 from src.utils.screenshot import take_screenshot
 
+
+
 def before_scenario(context, scenario):
     context.driver, context.wait = di.setup_driver(confr.get_browser())
-    context.actions = ActionChains(context.driver)    
-    context.make_page = MakeModule(context.driver, context.wait)
+    context.actions = ActionChains(context.driver)
+    # context.log = get_logger(__name__)
+    
+    context.make_page = MakePage(context.driver, context.wait)
     context.project_page = ProjectManagement(context.driver, context.wait)
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    # 🔹 Current date
+    now = datetime.now()
+    year = now.strftime("%Y")
+    month = now.strftime("%m")
+    day = now.strftime("%d")
+
+    # 🔹 Build path: screenshots/YYYY/MM/DD
+    context.screenshot_dir = os.path.join(base_dir, "screenshots", year, month, day)
+
+    # 🔹 Create folders if not exist
+    os.makedirs(context.screenshot_dir, exist_ok=True)
 
     if 'login_required' in scenario.tags:
         url = confr.get_baseurl()
@@ -39,7 +56,7 @@ def after_step(context, step):
         take_screenshot(context.driver, step.name)   
 
 
-# def take_screenshot(context, step):
+def take_screenshot(context, step):
     try:
         context.log.info("Inside screenshot function")
         if not hasattr(context, "driver"):
@@ -82,6 +99,9 @@ def after_step(context, step):
 
     except Exception as e:
         context.log.error(f"Failed to capture screenshot: {e}")
+
+
+
 def after_scenario(context, scenario):
     try:
         context.driver.quit()

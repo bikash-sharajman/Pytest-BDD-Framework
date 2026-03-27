@@ -4,7 +4,6 @@ Feature: Test the category module functionality
         Given User is logged into the application
         And User navigates to Category module
 
-    # -------------------- CREATE --------------------
 
     @regression @positive @testing
     Scenario: Add a new category
@@ -14,9 +13,6 @@ Feature: Test the category module functionality
         Then User should see category created success message
 
 
-
-    # -------------------- VIEW --------------------
-
     @regression @positive @testing
     Scenario: View category details
         Given category "Test category" exists
@@ -25,7 +21,6 @@ Feature: Test the category module functionality
         Then User should see the category details page
         And the category name should be "Test category"
 
-    # -------------------- UPDATE --------------------
 
     @regression @positive @testing
     Scenario: Edit category
@@ -36,8 +31,6 @@ Feature: Test the category module functionality
         And User click update button
         Then User should see category updated success message
 
-
-    # -------------------- DELETE --------------------
 
     @regression @positive @testing
     Scenario: Delete category
@@ -56,6 +49,7 @@ Feature: Test the category module functionality
         And User enter category name "Test category"
         And User click save button
         Then Toaster message contains "already exists" should be displayed
+    
     
     @negative
     Scenario: Add category without name

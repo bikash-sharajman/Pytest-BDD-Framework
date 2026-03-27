@@ -38,7 +38,7 @@ Feature: Test the make module functionality
 
     # -------------------- DELETE --------------------
 
-    @regression @positive 
+    @regression @positive @testing
     Scenario: Delete make
         Given make "Test Make Updated" exists
         When User search for "Test Make Updated"

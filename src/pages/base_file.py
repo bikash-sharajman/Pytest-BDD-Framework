@@ -34,7 +34,7 @@ class BasePage:
         logo_el = self.wait.until(ec.presence_of_element_located(commonelements.logo))
         self.actions.move_to_element(logo_el).perform()
 
-    def enter_value(self, locator, value):
+    def enter_value(self, locator, value:str):
         try:
             element = self.wait.until(ec.element_to_be_clickable(locator))
             element.clear()
@@ -45,9 +45,6 @@ class BasePage:
             element.send_keys(value)
         except TimeoutException:
             raise Exception(f"Unable to enter value in: {locator}")
-
-    def update_value(self, locator, value):
-        self.enter_value(locator, value)
 
 
     def navigate_to(self, locator):
@@ -72,10 +69,16 @@ class BasePage:
 
     def verify_value_on_table(self, element_name: str):
         try:
-            element = self.wait.until(ec.visibility_of_element_located(commonelements.element_on_table(element_name)))
-            return element
-        except TimeoutException:
-             raise Exception(f"Value '{element_name}' not found in table (timeout)")
+            element = self.wait.until(ec.visibility_of_element_located\
+                ((By.XPATH, f"//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight[normalize-space()='{element_name}']")))
+            text_element = element.text.strip()
+            if text_element == element_name:
+                return text_element  
+            else:
+                return f"Not matched - different name fetched: {text_element}"
+
+        except Exception as e:
+            return f"Element not found: {str(e)}"
 
     def get_toaster_message(self):
         try:
