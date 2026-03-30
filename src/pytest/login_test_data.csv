@@ -1,4 +1,0 @@
-scenario,email,password,expected
-valid,testuser100@testmail.com,Password@1234,success
-invalid,testuser1001@testmail.com,InvalidPassword,failure
-blank,,,failure

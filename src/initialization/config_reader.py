@@ -31,6 +31,7 @@ class ConfigReader:
   
     email: str = (os.getenv("email") or "").strip()
     password: str = (os.getenv("password") or "").strip()
+    mobile_no: str = (os.getenv("mobile_no") or "").strip()
     email_user: str = (os.getenv("email_user") or "").strip()
     email_pass: str = (os.getenv("email_pass") or "").strip()
 

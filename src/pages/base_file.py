@@ -83,6 +83,7 @@ class BasePage:
     def get_toaster_message(self):
         try:
             toast = self.wait.until(ec.visibility_of_element_located(commonelements.toaster))
+            self.wait.until(lambda d: toast.text.strip() != "")
             return toast.text.strip()
         except TimeoutException:
             raise Exception("Toaster message not visible")

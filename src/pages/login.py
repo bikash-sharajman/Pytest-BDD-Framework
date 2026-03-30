@@ -19,12 +19,14 @@ class Login(BasePage):
     
     def click_on_trouble_login(self):
         self.click_on(loginelements.trouble_login_button)
+        self.wait.until(ec.url_contains("forgot-password"))
     
     def enter_number(self, number):
         self.enter_value(loginelements.mobile_no_field, number)
     
     def click_generateopt(self):
         self.click_on(loginelements.generate_otp_button)
+        self.wait.until(ec.url_contains("otp-verification"))
         
         
           

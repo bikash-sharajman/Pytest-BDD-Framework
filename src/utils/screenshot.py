@@ -1,11 +1,13 @@
 import os
 from datetime import datetime
+import inspect
 
 
-def take_screenshot(driver, name: str):
+    
+def take_screenshot(driver):
     try:
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    
+        name = inspect.stack()[1].function
         now = datetime.now()
         screenshot_dir = os.path.join(base_dir, "screenshots", now.strftime("%Y"), now.strftime("%m"), now.strftime("%d"))
         
