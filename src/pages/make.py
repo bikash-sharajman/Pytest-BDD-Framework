@@ -20,6 +20,7 @@ class MakePage(BasePage):
                 self.redirect_to(commonelements.master_menu, commonelements.make_master)
                 self.wait.until(ec.url_contains("make"))
                 self.log.info("User is redirected to make master page.")
+            self.log.info("User is at make module.")
         except TimeoutException as e:
             print(f"TimeoutException in open_make_master: {e}")
         except StaleElementReferenceException as e:

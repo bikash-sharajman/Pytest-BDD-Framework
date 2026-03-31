@@ -9,4 +9,4 @@ class categoryModule:
     category_master_table = By.XPATH, "//p-table//table[@id='pn_id_6-table']"
 
 
-category = categoryModule()
+categoryelement = categoryModule()
