@@ -2,7 +2,7 @@ import time
 from behave import given, when, then
 from behave.exception import StepNotImplementedError
 from selenium.webdriver.support import expected_conditions as ec
-from src.locators.subcat_mstr_locators import subcat
+from src.locators.subcat_mstr_locators import subcategory_elements
 from src.locators.common_locators import commonelements
 from selenium.webdriver.common.by import By
 
@@ -24,14 +24,14 @@ def step_impl(context):
 
 @when(u'User clicks on add subcategory button')
 def step_impl(context):
-    context.wait.until(ec.element_to_be_clickable(subcat.add_sub_category_btn)).click()
+    context.wait.until(ec.element_to_be_clickable(subcategory_elements.add_sub_category_btn)).click()
     time.sleep(5)
-    context.wait.until(ec.visibility_of_element_located(subcat.subCat_input))
+    context.wait.until(ec.visibility_of_element_located(subcategory_elements.subCat_input))
 
 
 @when(u'User selects category "{category_name}"')
 def step_impl(context, category_name):
-    context.wait.until(ec.element_to_be_clickable(subcat.subCat_category_dd)).click()
+    context.wait.until(ec.element_to_be_clickable(subcategory_elements.subCat_category_dd)).click()
     time.sleep(1)
     option_locator = By.XPATH,f"//p-selectitem//li//span[normalize-space()='{category_name}']"
     time.sleep(1)
@@ -39,7 +39,7 @@ def step_impl(context, category_name):
 
 @when(u'User enters name "{subcategory_name}"')
 def step_impl(context, subcategory_name):
-    context.wait.until(ec.element_to_be_clickable(subcat.subCat_input)).send_keys(subcategory_name)
+    context.wait.until(ec.element_to_be_clickable(subcategory_elements.subCat_input)).send_keys(subcategory_name)
 
 
 @then(u'User should see sub category created success message')
@@ -53,7 +53,7 @@ def step_impl(context):
 
 @then(u'User should see the sub category details page')
 def step_impl(context):
-    assert context.wait.until(ec.visibility_of_element_located(subcat.view_subcat_modal))
+    assert context.wait.until(ec.visibility_of_element_located(subcategory_elements.view_subcat_modal))
 
 # @then(u'the name should be "Demo sub category"')
 # def step_impl(context):
@@ -62,7 +62,7 @@ def step_impl(context):
 
 @when(u'User clear and enter name "{updated_sub_category_name}"')
 def step_impl(context, updated_sub_category_name):
-    sub_cat_input = context.wait.until(ec.element_to_be_clickable(subcat.subCat_input))
+    sub_cat_input = context.wait.until(ec.element_to_be_clickable(subcategory_elements.subCat_input))
     sub_cat_input.clear()
     sub_cat_input.send_keys(updated_sub_category_name)
 
@@ -84,7 +84,7 @@ def step_impl(context):
 @then(u'sub category Validation message "{validation_message}" should be displayed')
 def step_impl(context, validation_message):
     validation_text = context.wait.until(ec.visibility_of_element_located\
-        (subcat.category_field_value_required_message)).text.strip()
+        (subcategory_elements.category_field_value_required_message)).text.strip()
     assert validation_text == validation_message, (
         f'Expected validation text "{validation_message}", but got "{validation_text}".')
 

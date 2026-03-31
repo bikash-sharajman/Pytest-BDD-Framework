@@ -48,7 +48,7 @@ def before_scenario(context, scenario):
         time.sleep(1)
         
 def before_step(context, step):
-    context.log = get_logger()
+    context.log = get_logger(__name__)
 
 def after_step(context, step):
     if step.status in ["failed", "error"]:

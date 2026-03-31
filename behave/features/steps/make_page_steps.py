@@ -77,7 +77,7 @@ def step_impl(context):
     toast = context.wait.until(ec.visibility_of_element_located(commonelements.toaster))
     time.sleep(1)
     toast_text = toast.text.strip()
-    assert "succesfully" in toast_text or "success" in toast_text, \
+    assert "Make added successfully." in toast_text, \
         (f"Expected creation success toaster, but got: {toast_text}")
     context.wait.until(ec.invisibility_of_element_located(commonelements.toaster))
 
@@ -149,9 +149,7 @@ def step_impl(context):
 
 @when(u'User clear and enter make name "{updated_make_name}"')
 def step_impl(context, updated_make_name):
-    print("111111111111111")
     make_input = context.wait.until(ec.element_to_be_clickable(makemodule.make_input))
-    print("222222222222222222222")
     make_input.clear()
     make_input.send_keys(updated_make_name)
 

@@ -12,12 +12,14 @@ from selenium.common.exceptions import (
 )
 
 from src.locators.common_locators import commonelements
+from src.utils.logger import get_logger
 
 class BasePage:
     def __init__(self, driver, wait):
         self.driver = driver
         self.wait = wait
         self.actions = ActionChains(driver)
+        self.log = get_logger()
 
     
     def click_on(self, locator):
@@ -63,27 +65,56 @@ class BasePage:
             search = self.wait.until(ec.element_to_be_clickable(commonelements.search_bar))
             search.clear()
             search.send_keys(element)
-        except TimeoutException:
-            raise Exception("Toaster message not visible")
+            time.sleep(0.5)
+            self.log.info(f"Searching for {element}")
+        except TimeoutException as e:
+            raise self.log.error(f"{element} not found in search result.{e}")
     
 
     def verify_value_on_table(self, element_name: str):
         try:
-            element = self.wait.until(ec.visibility_of_element_located\
-                ((By.XPATH, f"//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight[normalize-space()='{element_name}']")))
-            text_element = element.text.strip()
-            if text_element == element_name:
-                return text_element  
-            else:
-                return f"Not matched - different name fetched: {text_element}"
+            self.log.info(f"Validating the {element_name} in list table.")
+            self.search(element_name)
+            time.sleep(1)
+            elements = self.driver.find_elements\
+                (By.XPATH, f"//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight[normalize-space()='{element_name}']")
+            # self.log.info(f"Elements found count: {len(elements)}")
 
+            if len(elements) > 0:
+                self.log.info(f"{element_name} exists in table")
+                return True
+            else:
+                self.log.warning(f"{element_name} NOT found in table")
+                return False
         except Exception as e:
-            return f"Element not found: {str(e)}"
+            self.log.error(f"{element_name} is not dispalyed on the list table. : {str(e)}")
+            return "Element not found"
+
+    # def verify_value_on_table(self, element_name: str):
+    #     try:
+    #         self.log.info(f"Validating the {element_name} in list table.")
+
+    #         xpath = f"//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight[normalize-space()='{element_name}']"
+    #         self.log.info(f"XPath: {xpath}")
+
+    #         # Print all matching elements count
+    #         elements = self.driver.find_elements(By.XPATH, xpath)
+    #         self.log.info(f"Elements found count: {len(elements)}")
+    #         element = self.wait.until(
+    #             ec.visibility_of_element_located((By.XPATH, xpath))
+    #         )
+
+    #         return element.text.strip() == element_name
+
+    #     except Exception as e:
+    #         self.log.error(f"Exception: {str(e)}")
+    #         return False
+
 
     def get_toaster_message(self):
         try:
             toast = self.wait.until(ec.visibility_of_element_located(commonelements.toaster))
-            self.wait.until(lambda d: toast.text.strip() != "")
+            # self.wait.until(lambda d: toast.text.strip() != "")
             return toast.text.strip()
         except TimeoutException:
             raise Exception("Toaster message not visible")

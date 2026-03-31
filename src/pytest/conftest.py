@@ -6,6 +6,7 @@ from src.pages.login import Login
 from src.pages.category import CategoryPage
 from src.pages.make import MakePage
 from src.pages.sub_category import SubCategory
+from src.utils.logger import get_logger
 
 
 class Conftest:
@@ -17,6 +18,7 @@ class Conftest:
         self.category_page = CategoryPage(driver, wait)
         self.make_page = MakePage(driver, wait)
         self.subCategory_page = SubCategory(driver, wait)
+        self.log = get_logger()
         
 base_url = confr.get_baseurl()
 url = f"{base_url}/login"
