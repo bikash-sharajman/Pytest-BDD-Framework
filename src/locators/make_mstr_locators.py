@@ -13,4 +13,4 @@ class MakeModule:
     make_validation_message = By.XPATH, "//p-floatlabel//div[@role='alert']//span//span"
 
 
-makemodule = MakeModule()
+makeelement = MakeModule()
