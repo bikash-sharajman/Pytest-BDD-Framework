@@ -1,4 +1,4 @@
-from src.pages.base_file import BasePage
+from src.locators.base_file import BasePage
 from src.locators.common_locators import commonelements
 from src.locators.model_mstr_locators import modelelements
 from selenium.webdriver.support import expected_conditions as ec

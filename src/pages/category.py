@@ -1,4 +1,4 @@
-from src.pages.base_file import BasePage
+from src.locators.base_file import BasePage
 from src.locators.common_locators import commonelements
 from src.locators.category_mstr_locators import categoryelement
 from selenium.webdriver.support import expected_conditions as ec
@@ -22,7 +22,8 @@ class CategoryPage(BasePage):
                 self.click_on(commonelements.side_bar)
                 self.redirect_to(commonelements.master_menu, commonelements.category_master)
                 self.wait.until(ec.url_contains("category-master"))
-            self.log.info("User is at category module.")
+            else:
+                self.log.info("User is at category module.")
         except TimeoutException as e:
             print(f"TimeoutException in open_category_master: {e}")
         except StaleElementReferenceException as e:
@@ -36,7 +37,6 @@ class CategoryPage(BasePage):
     def add_new_category(self, category):
         try:
             self.open_category_master()
-            self.search(category)
             if self.verify_value_on_table(category):
                 self.log.info("Category already exists.")
                 return("Category already exists.")
@@ -61,7 +61,7 @@ class CategoryPage(BasePage):
     
     def update_category(self, category_name, updated_category_name):
         try:
-            self.open_make_master()
+            self.open_category_master()
             if self.verify_value_on_table(category_name):
                 self.log.info("Category already exists.")
                 self.click_on(commonelements.edit_icon)

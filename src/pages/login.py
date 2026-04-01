@@ -1,5 +1,5 @@
 import time
-from src.pages.base_file import BasePage
+from src.locators.base_file import BasePage
 from src.locators.login_locators import loginelements
 from selenium.webdriver.support import expected_conditions as ec
 

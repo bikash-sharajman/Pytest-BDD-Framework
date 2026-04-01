@@ -1,4 +1,4 @@
-from src.pages.base_file import BasePage
+from src.locators.base_file import BasePage
 from src.locators.common_locators import commonelements
 from src.locators.make_mstr_locators import makeelement
 from selenium.webdriver.support import expected_conditions as ec
@@ -36,13 +36,14 @@ class MakePage(BasePage):
             table_result = self.verify_value_on_table(make)
             if table_result:
                 self.log.info("Make already exists.")
-                return("Make already exists.")
+                return("Make already exists")
             else:
                 self.log.info(f"{make} not found, adding the new make {make}.")
                 self.click_on(makeelement.add_make)
                 self.enter_value(makeelement.make_input, make)
                 self.click_on(commonelements.modal_save_button)
                 self.log.info(f"{make} is sucessfully added into system.")
+                return "Make added successfully."
         except TimeoutException as e:
             self.log.error(f"TimeoutException in create_new_make: {e}")
             return e

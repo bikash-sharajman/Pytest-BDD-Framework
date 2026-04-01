@@ -1,6 +1,6 @@
 
 
-from src.pages.base_file import BasePage
+from src.locators.base_file import BasePage
 from src.locators.project_management_locators import pm
 
 from selenium.webdriver.support import expected_conditions as ec
