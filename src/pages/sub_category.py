@@ -65,62 +65,73 @@ class SubCategoryPage(BasePage):
     def update_subcategory(self, search_subcat, category_option=None, sub_category_name=None):
         try:
             self.open_sub_category_master()
-            self.click_on(commonelements.edit_icon)
-            if category_option is not None:
-                self.select_dropdown_option(subcategory_elements.subCat_category_dd, category_option)
-            if sub_category_name is not None:
-                self.enter_value(subcategory_elements.subCat_input, sub_category_name)
-            self.click_on(commonelements.update_button)
-            return f"{search_subcat} updated."
+            if self.verify_value_on_table(search_subcat):
+                self.log.info(f"{search_subcat} Sub category exists.")
+                self.click_on(commonelements.edit_icon)
+                if category_option is not None:
+                    self.select_dropdown_option(subcategory_elements.subCat_category_dd, category_option)
+                else:
+                    self.log.warning("Category not provided, sub category unable to add sub category in master.")
+                if sub_category_name is not None:
+                    self.enter_value(subcategory_elements.subCat_input, sub_category_name)
+                else:
+                    self.log.warning("Sub category value is not provided, so unable to add sub category in master.")
+                self.click_on(commonelements.update_button)
+                return "updated"
+            else:
+                self.click_on(subcategory_elements.add_sub_category_btn)
+                if category_option is not None:
+                    self.select_dropdown_option(subcategory_elements.subCat_category_dd, category_option)
+                if sub_category_name is not None:
+                    self.enter_value(subcategory_elements.subCat_input, sub_category_name)
+                self.click_on(commonelements.modal_save_button)
+                return "added"
         except TimeoutException as e:
-            msg = f"TimeoutException in update_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"TimeoutException in create_new_make: {e}")
+            return e
         except StaleElementReferenceException as e:
-            msg = f"StaleElementReferenceException in update_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"StaleElementReferenceException in create_new_make: {e}")
+            return e
         except ElementNotInteractableException as e:
-            msg = f"ElementNotInteractableException in update_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"ElementNotInteractableException in create_new_make: {e}")
+            return e
         except NoSuchElementException as e:
-            msg = f"NoSuchElementException in update_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"NoSuchElementException in create_new_make: {e}")
+            return e
 
-    # def search_subcategory(self, sub_category_name):
-    #     try:
-    #         self.search(sub_category_name)
-    #     except TimeoutException as e:
-    #         print(f"TimeoutException in search_subcategory: {e}")
-    #     except StaleElementReferenceException as e:
-    #         print(f"StaleElementReferenceException in search_subcategory: {e}")
-    #     except ElementNotInteractableException as e:
-    #         print(f"ElementNotInteractableException in search_subcategory: {e}")
-    #     except NoSuchElementException as e:
-    #         print(f"NoSuchElementException in search_subcategory: {e}")
-
-    def delete_subcategory(self, sub_category_name):
+    def delete_subcategory(self, sub_category_name, category_option="Demo category"):
         try:
             self.open_sub_category_master()
-            self.search(sub_category_name)
-            self.click_on(commonelements.delete_icon)
-            self.click_on(commonelements.delete_button)
-            return f"{sub_category_name} deleted."
+            if self.verify_value_on_table(sub_category_name):
+                self.log.info(f"{sub_category_name} Sub category exists.")
+                self.click_on(commonelements.delete_icon)
+                self.click_on(commonelements.delete_button)
+                return "deleted"
+            else:
+                self.click_on(subcategory_elements.add_sub_category_btn)
+                if category_option is not None:
+                    self.select_dropdown_option(subcategory_elements.subCat_category_dd, category_option)
+                else:
+                    self.log.warning("Category not provided, sub category unable to add sub category in master.")
+                if sub_category_name is not None:
+                    self.enter_value(subcategory_elements.subCat_input, sub_category_name)
+                else:
+                    self.log.warning("Sub category value is not provided, so unable to add sub category in master.")
+                self.click_on(commonelements.modal_save_button)
+                self.click_on(commonelements.toaster)
+                self.search(sub_category_name)
+                self.click_on(commonelements.delete_icon)
+                self.click_on(commonelements.delete_button)
+                return "removed"
         except TimeoutException as e:
-            msg = f"TimeoutException in delete_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"TimeoutException in create_new_make: {e}")
+            return e
         except StaleElementReferenceException as e:
-            msg = f"StaleElementReferenceException in delete_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"StaleElementReferenceException in create_new_make: {e}")
+            return e
         except ElementNotInteractableException as e:
-            msg = f"ElementNotInteractableException in delete_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"ElementNotInteractableException in create_new_make: {e}")
+            return e
         except NoSuchElementException as e:
-            msg = f"NoSuchElementException in delete_subcategory: {e}"
-            print(msg)
-            return msg
+            self.log.error(f"NoSuchElementException in create_new_make: {e}")
+            return e

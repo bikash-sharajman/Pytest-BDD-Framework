@@ -13,6 +13,7 @@ from selenium.common.exceptions import (
 
 from src.locators.common_locators import commonelements
 from src.utils.logger import get_logger
+from src.utils.screenshot import take_screenshot
 
 class BasePage:
     def __init__(self, driver, wait):
@@ -20,6 +21,7 @@ class BasePage:
         self.wait = wait
         self.actions = ActionChains(driver)
         self.log = get_logger()
+        self.take_screenshot = take_screenshot(driver)
 
     
     def click_on(self, locator):
