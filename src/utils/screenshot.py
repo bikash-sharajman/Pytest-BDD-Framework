@@ -4,10 +4,10 @@ import inspect
 
 
     
-def take_screenshot(driver):
+def take_screenshot(driver, name=None):
     try:
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        name = inspect.stack()[1].function
+        screenshot_name = name or inspect.stack()[1].function
         now = datetime.now()
         screenshot_dir = os.path.join(base_dir, "screenshots", now.strftime("%Y"), now.strftime("%m"), now.strftime("%d"))
         
@@ -15,7 +15,7 @@ def take_screenshot(driver):
         
         timestamp = now.strftime("%H%M%S")
         
-        file_name = f"{name.replace(' ', '_')}_{timestamp}.png"
+        file_name = f"{screenshot_name.replace(' ', '_')}_{timestamp}.png"
         file_path = os.path.join(screenshot_dir, file_name)
         
         driver.save_screenshot(file_path)

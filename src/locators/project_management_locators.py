@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import  By
 
 
 
-class project_manage:
+class project_management:
     
     
     add_project_btn = By.XPATH, "//p-button[@label='Add Project']//button//span[2]"
@@ -52,7 +52,7 @@ class project_manage:
     mounting_type_dd = By.XPATH, "//p-floatlabel//p-select[@name='mounting_type']//div"
     warehouse_dd = By.XPATH, "//p-floatlabel//p-select[@name='warehouse_id']//div"
     data_frequency_dd = By.XPATH, "//p-floatlabel//p-select[@id='data_frequency']"
-    commission_date_picker = By.XPATH, "//*[@id='commissioning_date']/span/span/calendaricon"
+    commission_date_picker = By.XPATH, "//*[@id='commissioning_date']"
     
     
     #site person tab
@@ -76,6 +76,6 @@ class project_manage:
 
 
 
-pm = project_manage()
+pm = project_management()
 
 

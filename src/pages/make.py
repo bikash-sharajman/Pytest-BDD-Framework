@@ -16,19 +16,13 @@ class MakePage(BasePage):
         try:
             url = self.driver.current_url
             if "make" not in url.lower():
-                self.click_on(commonelements.side_bar)
+                self.click_on(commonelements.overview_dashboard)
                 self.redirect_to(commonelements.master_menu, commonelements.make_master)
                 self.wait.until(ec.url_contains("make"))
                 self.log.info("User is redirected to make master page.")
             self.log.info("User is at make module.")
         except TimeoutException as e:
             print(f"TimeoutException in open_make_master: {e}")
-        except StaleElementReferenceException as e:
-            print(f"StaleElementReferenceException in open_make_master: {e}")
-        except ElementNotInteractableException as e:
-            print(f"ElementNotInteractableException in open_make_master: {e}")
-        except NoSuchElementException as e:
-            print(f"NoSuchElementException in open_make_master: {e}")
 
     def create_new_make(self, make):
         try:

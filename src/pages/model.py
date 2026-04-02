@@ -12,7 +12,7 @@ class Model(BasePage):
     def open_model_master(self):
         url = self.driver.current_url
         if "model" not in url.lower():
-            self.click_on_(commonelements.side_bar)
+            self.click_on_(commonelements.overview_dashboard)
             self.redirect_to(commonelements.master_menu, commonelements.model_master)
             self.wait.until(ec.url_contains("model"))
             

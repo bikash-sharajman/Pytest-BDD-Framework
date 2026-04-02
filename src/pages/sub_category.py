@@ -18,7 +18,7 @@ class SubCategoryPage(BasePage):
         try:
             url = self.driver.current_url
             if "subcategory-master" not in url.lower():
-                self.click_on(commonelements.side_bar)
+                self.click_on(commonelements.overview_dashboard)
                 self.redirect_to(commonelements.master_menu, commonelements.sub_category_master)
                 self.wait.until(ec.url_contains("subcategory"))
                 self.log.info("User is redirected to subcategory master page.")
@@ -26,12 +26,6 @@ class SubCategoryPage(BasePage):
                 self.log.info("User is at subcategory module.")
         except TimeoutException as e:
             print(f"TimeoutException in open_sub_category_master: {e}")
-        except StaleElementReferenceException as e:
-            print(f"StaleElementReferenceException in open_sub_category_master: {e}")
-        except ElementNotInteractableException as e:
-            print(f"ElementNotInteractableException in open_sub_category_master: {e}")
-        except NoSuchElementException as e:
-            print(f"NoSuchElementException in open_sub_category_master: {e}")
 
     def create_new_subcategory(self, category_option, sub_category_name):
         try:

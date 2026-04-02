@@ -1,6 +1,7 @@
 import time
-
+from src.initialization.config_reader import confr
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import (
@@ -21,8 +22,42 @@ class BasePage:
         self.wait = wait
         self.actions = ActionChains(driver)
         self.log = get_logger()
-        self.take_screenshot = take_screenshot(driver)
+        self.take_screenshot = take_screenshot
 
+    # base_url = confr.get_baseurl()
+    # url = f"{base_url}/login"
+    # def open_overview_dashboard(self, driver, wait):
+    #     try:
+
+    #         # 🔹 Wait for URL to change (either dashboard or login)
+    #         wait.until(lambda d: "solar-plant-dashboard" in d.current_url.lower()
+    #                             or "login" in d.current_url.lower()
+    #                             or "no-privilege" in d.current_url.lower())
+
+    #         url = driver.current_url.lower()
+    #         if "solar-plant-dashboard" in url:
+    #             self.log.info("User is already on overview dashboard page.")
+    #             return True
+
+    #         elif "login" in url:
+    #             self.log.info("Perform login and redirect to overview page.")
+    #             self.login_page.login(confr.email, confr.password)
+    #             wait.until(ec.url_contains("solar-plant-dashboard"))
+    #             self.log.info("Login successful, redirected on dashboard.")
+    #             return True
+
+    #         elif "no-privilege" in url:
+    #             self.log.error("No privilege to access overview dashboard.")
+    #             return False
+
+    #         else:
+    #             self.log.error(f"Unexpected URL: {url}")
+    #             return False
+
+    #     except TimeoutException as e:
+    #         self.log.error(f"Timeout in open_overview_dashboard: {str(e)}")
+    #         return False
+        
     
     def click_on(self, locator):
         try:
@@ -49,8 +84,46 @@ class BasePage:
             element.clear()
             element.send_keys(value)
         except TimeoutException:
-            raise Exception(f"Unable to enter value in: {locator}")
+            raise Exception(f"Timeout : Unable to enter value in: {locator}")
 
+    def enter_date(self, locator, value: str):
+        try:
+            element = self.wait.until(ec.presence_of_element_located(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+            time.sleep(0.5)
+
+            if element.tag_name.lower() == "input":
+                input_element = element
+            else:
+                input_element = element.find_element(By.XPATH, ".//input")
+
+            self.driver.execute_script(
+                """
+                const input = arguments[0];
+                const value = arguments[1];
+                input.removeAttribute('readonly');
+                input.focus();
+                input.value = '';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                input.dispatchEvent(new Event('blur', { bubbles: true }));
+                """,
+                input_element,
+                str(value),
+            )
+
+            try:
+                input_element.send_keys(Keys.TAB)
+            except Exception:
+                pass
+
+        except NoSuchElementException:
+            raise Exception(f"Date input not found inside locator: {locator}")
+        except TimeoutException:
+            raise Exception(f"Unable to enter date in: {locator}")
+        
 
     def navigate_to(self, locator):
         self.wait.until(ec.element_to_be_clickable(locator)).click()

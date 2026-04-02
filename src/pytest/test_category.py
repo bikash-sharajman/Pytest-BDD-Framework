@@ -3,7 +3,7 @@ from src.initialization.config_reader import confr
 from selenium.webdriver.support import expected_conditions as ec
 
 
-@pytest.mark.smoke
+@pytest.mark.testing
 def test_add_new_category(setup):
     conftest = setup
     conftest.login_page.login(confr.email, confr.password)
@@ -16,7 +16,7 @@ def test_add_new_category(setup):
         toaster = conftest.base_page.get_toaster_message()
         assert "New Category created successfully" in toaster, pytest.fail(f"Expected toaster not displayed, but got {toaster}")
     
-@pytest.mark.testing
+@pytest.mark.smoke
 def test_udpate_category(setup):
     conftest = setup
     conftest.login_page.login(confr.email, confr.password)

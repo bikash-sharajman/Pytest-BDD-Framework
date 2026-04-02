@@ -32,11 +32,11 @@ class CommonLocators:
     overview_dashboard = By.XPATH, "//i-feather[@class='icon-home']"
 
     #management menu
-    user_management = By.XPATH, "//aside//span[ormalize-space()= 'User Management']"
-    project_management = By.XPATH, "//a[@href='/plant-management']"
-    vendor_management = By.XPATH, "//aside//span[ormalize-space()= 'Vendor Management']"
-    team_management = By.XPATH, "//aside//span[ormalize-space()= 'Team Management']"
-    invenvtory_management = By.XPATH, "//aside//span[ormalize-space()= 'Inventory Management']"
+    user_management = By.XPATH, "//aside//span[normalize-space()= 'User Management']"
+    project_management = By.XPATH, "//aside//span[normalize-space()= 'Project Management']"
+    vendor_management = By.XPATH, "//aside//span[normalize-space()= 'Vendor Management']"
+    team_management = By.XPATH, "//aside//span[normalize-space()= 'Team Management']"
+    invenvtory_management = By.XPATH, "//aside//span[normalize-space()= 'Inventory Management']"
 
     #master menu
     make_master = By.XPATH, "//a[@href='/make']"

@@ -19,19 +19,13 @@ class CategoryPage(BasePage):
         try:
             url = self.driver.current_url
             if "category-master" not in url.lower():
-                self.click_on(commonelements.side_bar)
+                self.click_on(commonelements.overview_dashboard)
                 self.redirect_to(commonelements.master_menu, commonelements.category_master)
                 self.wait.until(ec.url_contains("category-master"))
             else:
                 self.log.info("User is at category module.")
         except TimeoutException as e:
             print(f"TimeoutException in open_category_master: {e}")
-        except StaleElementReferenceException as e:
-            print(f"StaleElementReferenceException in open_category_master: {e}")
-        except ElementNotInteractableException as e:
-            print(f"ElementNotInteractableException in oopen_category_master: {e}")
-        except NoSuchElementException as e:
-            print(f"NoSuchElementException in open_category_master: {e}")
 
         
     def add_new_category(self, category):
