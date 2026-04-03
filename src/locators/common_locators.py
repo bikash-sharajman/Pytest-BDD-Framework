@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 
 class CommonLocators:
     
-    side_bar = By.XPATH, "//aside[@class='left-sidebar']"
+    side_bar = By.XPATH, "//i-feather[@class='icon-home']"
     go_back_button = By.XPATH, "//span[text()='Go Back']"
     search_bar =By.XPATH, "//p-iconfield//input[@psize='small']"
     modal_cancel_button = By.XPATH, "//button//span[normalize-space()='Cancel']"

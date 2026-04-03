@@ -16,33 +16,18 @@ from selenium.common.exceptions import (
 class ProjectManagement(BasePage):
     def __init__(self, driver, wait):
         super().__init__(driver, wait)
-
-    def select_current_commissioning_date(self):
-        try:
-            self.log.info("Selecting current commissioning date from date picker.")
-            date_picker = self.wait.until(ec.element_to_be_clickable(pm.commission_date_picker))
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_picker)
-            date_picker.click()
-
-            current_day = str(datetime.now().day)
-            day_locator = (
-                By.XPATH,
-                f"//table[contains(@class,'p-datepicker-calendar')]//td[not(contains(@class,'p-disabled'))]//span[normalize-space()='{current_day}']"
-            )
-            self.wait.until(ec.element_to_be_clickable(day_locator)).click()
-            self.log.info(f"Current commissioning date selected: {current_day}")
-        except TimeoutException as e:
-            self.take_screenshot(self.driver)
-            msg = f"TimeoutException in select_current_commissioning_date: {e}"
-            self.log.error(msg)
-            return msg
-        except NoSuchElementException as e:
-            self.take_screenshot(self.driver)
-            msg = f"NoSuchElementException in select_current_commissioning_date: {e}"
-            self.log.error(msg)
-            return msg
-        return "selected"
-
+    
+    
+    # def select_commission_date(self, date):
+    #     date_picker = self.wait.until(ec.element_to_be_clickable(pm.commission_date_picker))
+    #     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_picker)
+    #     date_picker.click()
+    #     # day = datetime.now().day
+    #     time.sleep(0.5)
+    #     date = self.wait.until(ec.element_to_be_clickable((By.XPATH, f"//tbody//span[text() = '{date}']")))
+    #     time.sleep(0.5)
+    #     date.click()
+    
     
     def open_project_management(self):
         
@@ -69,11 +54,11 @@ class ProjectManagement(BasePage):
         date_fields = {"commission_date_picker"}
         try:
             self.open_project_management()
-            project_name = project_data.get("project_name")
-            if self.verify_value_on_table(project_name):
-                self.log.info(f"{project_name} already exist.")
-                self.take_screenshot(self.driver)
-                return "exist"
+            # project_name = project_data['project_name']
+            # if self.verify_value_on_table(project_name):
+            #     self.log.info(f"{project_name} already exist.")
+            #     self.take_screenshot(self.driver)
+            #     return "exist"
             self.click_on(pm.add_project_btn)
             # Fill in all required fields
             for field, value in project_data.items():
@@ -82,12 +67,22 @@ class ProjectManagement(BasePage):
                     if field in dropdown_fields:
                         self.select_dropdown_option(locator, value)
                     elif field in date_fields:
-                        self.enter_date(locator, value)
+                        # self.enter_date(locator, value)
+                        date_picker = self.wait.until(ec.element_to_be_clickable(pm.commission_date_picker))
+                        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_picker)
+                        date_picker.click()
+                        day = datetime.now().day
+                        time.sleep(1)
+                        date = self.wait.until(ec.element_to_be_clickable((By.XPATH, f"//tbody//span[text() = '{day}']")))
+                        self.driver.execute_script("arguments[0].click();", date)
+                        # date.click()
+                        
+                        self.log.info("date picker is clicked.")
                     else:
                         self.enter_value(locator, value)
             self.take_screenshot(self.driver)
             self.click_on(commonelements.modal_save_button)            
-            self.log.info(f"{project_name} created successfully.")
+            self.log.info(f"{project_data.get('project_name')} created successfully.")
             self.take_screenshot(self.driver)
             
             self.click_on(pm.site_person_tab)
@@ -122,7 +117,7 @@ class ProjectManagement(BasePage):
             self.log.error(msg)
             return msg
 
-    def update_project(self, search_project, update_data: dict):
+    def update_project(self,project_data: dict, update_data: dict):
         dropdown_fields = {
         "state_dd", "cluster_dd", "billing_dd", "project_type_dd", "sub_type_dd",
         "technology_type_dd", "installation_type_dd", "mounting_type_dd",
@@ -131,8 +126,8 @@ class ProjectManagement(BasePage):
         date_fields = {"commission_date_picker"}
         try:
             self.open_project_management()
-            if self.verify_value_on_table(search_project):
-                self.log.info(f"{search_project} project exists.")
+            if self.verify_value_on_table(project_data.get('project_name')):
+                self.log.info(f"{project_data.get('project_name')} project exists.")
                 self.click_on(commonelements.edit_icon)
                 for field, value in update_data.items():
                     locator = getattr(pm, field, None)
@@ -140,14 +135,20 @@ class ProjectManagement(BasePage):
                         if field in dropdown_fields:
                             self.select_dropdown_option(locator, value)
                         elif field in date_fields:
-                            self.enter_date(locator, value)
+                            date_picker = self.wait.until(ec.element_to_be_clickable(pm.commission_date_picker))
+                            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", date_picker)
+                            date_picker.click()
+                            day = datetime.now().day
+                            time.sleep(1)
+                            date = self.wait.until(ec.element_to_be_clickable((By.XPATH, f"//tbody//span[text() = '{day}']")))
+                            date.click()
                         else:
                             self.enter_value(locator, value)
                 self.click_on(commonelements.update_button)
                 self.take_screenshot(self.driver)
                 return "updated"
             else:
-                self.log.warning(f"{search_project} project does not exist. Adding new project.")
+                self.log.warning(f"{update_data.get('project_name')} project does not exist. Adding new project.")
                 return self.create_new_project(update_data)
         except TimeoutException as e:
             msg = f"TimeoutException in update_project: {e}"

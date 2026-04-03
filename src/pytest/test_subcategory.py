@@ -37,7 +37,7 @@ def test_edit_subcategory(setup):
         pytest.fail(f"Unexpected result from edit_subcategory: {result}")
         
 
-@pytest.mark.testing
+@pytest.mark.smoke
 def test_delete_subcategory(setup):
     conftest = setup
     conftest.login_page.login(confr.email, confr.password)

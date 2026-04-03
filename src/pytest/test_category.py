@@ -3,7 +3,7 @@ from src.initialization.config_reader import confr
 from selenium.webdriver.support import expected_conditions as ec
 
 
-@pytest.mark.testing
+@pytest.mark.smoke
 def test_add_new_category(setup):
     conftest = setup
     conftest.login_page.login(confr.email, confr.password)
