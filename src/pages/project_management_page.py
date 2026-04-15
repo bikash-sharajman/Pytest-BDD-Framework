@@ -7,16 +7,18 @@ from src.locators.common_locators import commonelements
 
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.common.exceptions import (
     TimeoutException, StaleElementReferenceException, NoSuchElementException,
     ElementNotInteractableException)
 
+from src.utils.screenshot import take_screenshot
+
 
 class ProjectManagement(BasePage):
     def __init__(self, driver, wait):
         super().__init__(driver, wait)
-    
     
     # def select_commission_date(self, date):
     #     date_picker = self.wait.until(ec.element_to_be_clickable(pm.commission_date_picker))
@@ -40,7 +42,7 @@ class ProjectManagement(BasePage):
             else:
                 self.log.info("User is at project management module.")
         except TimeoutException as e:
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             self.log.error(f"TimeoutException in open_project_management: {e}")
             return False
         return True
@@ -49,15 +51,15 @@ class ProjectManagement(BasePage):
         dropdown_fields = {
         "state_dd", "cluster_dd", "billing_dd", "project_type_dd", "sub_type_dd",
         "technology_type_dd", "installation_type_dd", "mounting_type_dd",
-        "warehouse_dd", "data_frequency_dd"
-    }
+        "warehouse_dd", "data_frequency_dd"}
         date_fields = {"commission_date_picker"}
+        maps = {"mapping_button"}
         try:
             self.open_project_management()
             # project_name = project_data['project_name']
             # if self.verify_value_on_table(project_name):
             #     self.log.info(f"{project_name} already exist.")
-            #     self.take_screenshot(self.driver)
+            #     take_screenshot(self.driver)
             #     return "exist"
             self.click_on(pm.add_project_btn)
             # Fill in all required fields
@@ -76,14 +78,20 @@ class ProjectManagement(BasePage):
                         date = self.wait.until(ec.element_to_be_clickable((By.XPATH, f"//tbody//span[text() = '{day}']")))
                         self.driver.execute_script("arguments[0].click();", date)
                         # date.click()
-                        
                         self.log.info("date picker is clicked.")
+                    elif field in maps:
+                        map_field = self.wait.until(ec.element_to_be_clickable(pm.mapping_button))
+                        map_field.click()
+                        time.sleep(2)
+                        map_point = self.wait.until(ec.element_to_be_clickable((By.XPATH, "//app-map-picker/div/div/div/div[3]/div[1]/div[1]")))
+                        actions = ActionChains(self.driver)
+                        actions.move_to_element_with_offset(map_point, 100, 50).click().perform()
                     else:
                         self.enter_value(locator, value)
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             self.click_on(commonelements.modal_save_button)            
             self.log.info(f"{project_data.get('project_name')} created successfully.")
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             
             self.click_on(pm.site_person_tab)
             self.click_on(pm.add_person_button)
@@ -94,25 +102,25 @@ class ProjectManagement(BasePage):
             self.click_on(pm.site_tech_option)
             self.click_on(commonelements.modal_save_button)
             self.log.info("project privilege provided.")
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             return "added"
         except TimeoutException as e:
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             msg = f"TimeoutException in create_new_project: {e}"
             self.log.error(msg)
             return msg
         except StaleElementReferenceException as e:
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             msg = f"StaleElementReferenceException in create_new_project: {e}"
             self.log.error(msg)
             return msg
         except ElementNotInteractableException as e:
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             msg = f"ElementNotInteractableException in create_new_project: {e}"
             self.log.error(msg)
             return msg
         except NoSuchElementException as e:
-            self.take_screenshot(self.driver)
+            take_screenshot(self.driver)
             msg = f"NoSuchElementException in create_new_project: {e}"
             self.log.error(msg)
             return msg
@@ -145,7 +153,7 @@ class ProjectManagement(BasePage):
                         else:
                             self.enter_value(locator, value)
                 self.click_on(commonelements.update_button)
-                self.take_screenshot(self.driver)
+                take_screenshot(self.driver)
                 return "updated"
             else:
                 self.log.warning(f"{update_data.get('project_name')} project does not exist. Adding new project.")

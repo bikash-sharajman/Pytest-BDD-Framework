@@ -41,6 +41,7 @@ class project_management:
     display_order = By.CSS_SELECTOR, "[id='display_order']"
     wms_installed_checkbox = By.XPATH, "//input[@name='is_wms_installed']"
     smb_installed_checkbox = By.XPATH, "//input[@name='is_smb_installed']"
+    mapping_button = By.XPATH, "//span[text()=' Select Latitude and Longitude']"
     
     state_dd = By.XPATH, "//p-floatlabel//p-select[@name='state_id']//div"
     cluster_dd = By.XPATH, "//p-floatlabel//p-select[@name='cluster_id']//div"

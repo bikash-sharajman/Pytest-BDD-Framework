@@ -6,6 +6,8 @@ from src.locators.common_locators import commonelements
 from selenium.webdriver.support import expected_conditions as ec
 from src.utils.screenshot import take_screenshot
 
+pytestmark = pytest.mark.no_login
+
 @pytest.mark.smoke
 @pytest.mark.order(1)
 def test_valid_login(setup):

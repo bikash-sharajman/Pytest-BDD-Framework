@@ -21,6 +21,12 @@ class ConfigReader:
     def get_browser(self):
         return self.confp.get("DEFAULT", "browser")
 
+    def get_headless(self):
+        return self.confp.getboolean("DEFAULT", "headless", fallback=False)
+
+    def get_timeout(self):
+        return self.confp.getint("DEFAULT", "timeout", fallback=10)
+
     def get_baseurl(self):
         time.sleep(1)
         return self.confp.get("DEFAULT", "base_url")
@@ -72,30 +78,5 @@ class ConfigReader:
             raise Exception("OTP not received within 1 minute")
 
 
-
-
-
-
-
-
-
-
-
-    # def get_email_otp(self):
-    #     with MailBox("imap.gmail.com").login(self.email_user, self.email_pass, "INBOX") as mailbox:
-    #         for mail in mailbox.fetch(AND(subject="Forgot Your Password"),reverse=True, seen=False, limit=1):
-    #             email_body = mail.html      
-    #             soup = BeautifulSoup(email_body, "html.parser")
-    #             text = soup.get_text()
-    #             match = re.search(r'OTP:\s*(\d{4,6})', text)
-    #             if match:
-    #                 return match.group(1)
-    #             else:
-    #                 raise Exception("OTP not found")
-
 confr = ConfigReader()
 
-
-# otp=confr.get_email_otp()
-
-# print(otp)

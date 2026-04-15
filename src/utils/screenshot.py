@@ -4,10 +4,10 @@ import inspect
 
 
     
-def take_screenshot(driver, name=None):
+def take_screenshot(driver):
     try:
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        screenshot_name = name or inspect.stack()[1].function
+        screenshot_name = inspect.stack()[1].function
         now = datetime.now()
         screenshot_dir = os.path.join(base_dir, "screenshots", now.strftime("%Y"), now.strftime("%m"), now.strftime("%d"))
         
@@ -24,6 +24,7 @@ def take_screenshot(driver, name=None):
 
     except Exception as e:
         print(f"Screenshot failed: {e}")
+
 
 
 

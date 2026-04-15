@@ -1,12 +1,8 @@
 import pytest
-from src.initialization.config_reader import confr
-from selenium.webdriver.support import expected_conditions as ec
 
 @pytest.mark.smoke
 def test_add_new_subcategory(setup):
     conftest = setup
-    conftest.login_page.login(confr.email, confr.password)
-    conftest.wait.until(ec.url_contains("solar-plant-dashboard"))
     result = conftest.sub_category_page.create_new_subcategory("Demo category", "Test Subcategory")
     if "exist" in result.lower():
         print(result)
@@ -20,8 +16,6 @@ def test_add_new_subcategory(setup):
 @pytest.mark.smoke
 def test_edit_subcategory(setup):
     conftest = setup
-    conftest.login_page.login(confr.email, confr.password)
-    conftest.wait.until(ec.url_contains("solar-plant-dashboard"))
     result = conftest.sub_category_page.update_subcategory\
         ("Test Subcategory", category_option="Demo category", sub_category_name="Updated Subcategory")
     if "updated" in result.lower():
@@ -40,8 +34,6 @@ def test_edit_subcategory(setup):
 @pytest.mark.smoke
 def test_delete_subcategory(setup):
     conftest = setup
-    conftest.login_page.login(confr.email, confr.password)
-    conftest.wait.until(ec.url_contains("solar-plant-dashboard"))
     result = conftest.sub_category_page.delete_subcategory("Updated Subcategory")
     if "deleted" in result.lower():
         toaster = conftest.base_page.get_toaster_message()

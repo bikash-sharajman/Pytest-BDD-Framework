@@ -1,6 +1,4 @@
 import pytest
-from src.initialization.config_reader import confr
-from selenium.webdriver.support import expected_conditions as ec
 from datetime import datetime
 
 
@@ -11,8 +9,8 @@ project_data = {
     "short_name": f"TAP001{today}",
     "site_address": "123 Test Lane",
     "state_dd": "Bihar",
-    "latitude": 25.3652,
-    "longitude": 76.2541,
+    # "latitude": 25.3652,
+    # "longitude": 76.2541,
     "cluster_dd": "first demo",
     "billing_dd": "Refex",
     "project_type_dd": "Solar Management System",
@@ -35,9 +33,6 @@ project_data = {
 @pytest.mark.testing
 def test_add_new_project(setup):
     conftest = setup
-    conftest.login_page.login(confr.email, confr.password)
-    conftest.wait.until(ec.url_contains("solar-plant-dashboard"))
-    
     result = conftest.project_page.create_new_project(project_data)
     if "exist" in result.lower():
         print(result)
@@ -51,8 +46,6 @@ def test_add_new_project(setup):
 @pytest.mark.testing
 def test_update_project(setup):
     conftest = setup
-    conftest.login_page.login(confr.email, confr.password)
-    conftest.wait.until(ec.url_contains("solar-plant-dashboard"))
     # today = datetime.now().strftime('%d%m%Y%H%M%S')
     update_data = {
         "project_name": f"Updated {project_data['project_name']}",

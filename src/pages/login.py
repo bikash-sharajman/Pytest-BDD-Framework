@@ -1,7 +1,10 @@
 import time
 from src.locators.base_file import BasePage
 from src.locators.login_locators import loginelements
+from src.locators.common_locators import commonelements
 from selenium.webdriver.support import expected_conditions as ec
+
+from src.utils.screenshot import take_screenshot
 
 class Login(BasePage):
 
@@ -33,8 +36,15 @@ class Login(BasePage):
     def login(self, email, password):
         self.enter_email_id(email)
         self.enter_password(password)
-        time.sleep(1)
         self.click_on(loginelements.login_button)
+        self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
+        url = self.driver.current_url
+        if "no-privilege" in url.lower():
+            self.log.warning("No authorization to access the overview dashboard.")
+            self.click_on(commonelements.go_back_button)
+            take_screenshot(self.driver)
+            return self.driver.quit()
+        
 
     
     def forget_password(self, email:str, mobileno: str):

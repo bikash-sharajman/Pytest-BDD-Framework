@@ -1,5 +1,5 @@
 import pytest
-import time
+from selenium.webdriver.support import expected_conditions as ec
 from src.initialization.driver_initialization import di
 from src.initialization.config_reader import confr
 from src.locators.base_file import BasePage
@@ -9,9 +9,6 @@ from src.pages.make import MakePage
 from src.pages.sub_category import SubCategoryPage
 from src.pages.project_management_page import ProjectManagement
 from src.utils.logger import get_logger
-from src.utils.screenshot import take_screenshot
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as ec
 
 
 class Conftest:
@@ -24,7 +21,7 @@ class Conftest:
         self.make_page = MakePage(driver, wait)
         self.sub_category_page = SubCategoryPage(driver, wait)
         self.log = get_logger()
-        self.take_screenshot = take_screenshot(driver)
+        # self.take_screenshot = ss.take_screenshot(driver)
         self.project_page = ProjectManagement(driver, wait)
         
 base_url = confr.get_baseurl()
@@ -32,11 +29,28 @@ url = f"{base_url}/login"
     
 @pytest.fixture(scope="function")
 def setup():
-    driver, wait = di.setup_driver("chrome")
+    driver, wait = di.setup_driver()
     driver.get(url)
     conftest = Conftest(driver, wait)
     yield conftest
     driver.quit()
+
+
+@pytest.fixture(autouse=True)
+def login_before_each_test(setup, request):
+    if request.node.get_closest_marker("no_login"):
+        yield
+        return
+
+    conftest = setup
+    conftest.login_page.login(confr.email, confr.password)
+    conftest.wait.until(ec.url_contains("solar-plant-dashboard"))
+
+    yield
+    
+    
+    
+    
 
 # @pytest.fixture(scope="function")
 # def ood(setup):

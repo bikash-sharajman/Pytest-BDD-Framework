@@ -14,7 +14,8 @@ from selenium.common.exceptions import (
 
 from src.locators.common_locators import commonelements
 from src.utils.logger import get_logger
-from src.utils.screenshot import take_screenshot
+
+
 
 class BasePage:
     def __init__(self, driver, wait):
@@ -22,7 +23,6 @@ class BasePage:
         self.wait = wait
         self.actions = ActionChains(driver)
         self.log = get_logger()
-        self.take_screenshot = take_screenshot
 
     # base_url = confr.get_baseurl()
     # url = f"{base_url}/login"
@@ -62,8 +62,11 @@ class BasePage:
     def click_on(self, locator):
         try:
             element = self.wait.until(ec.element_to_be_clickable(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             element.click()
         except (ElementClickInterceptedException, StaleElementReferenceException):
+            element = self.wait.until(ec.presence_of_element_located(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             self.driver.execute_script("arguments[0].click();", element)
         except TimeoutException:
             raise Exception(f"Element not clickable: {locator}")
@@ -75,14 +78,15 @@ class BasePage:
 
     def enter_value(self, locator, value:str):
         try:
-            element = self.wait.until(ec.element_to_be_clickable(locator))
-            time.sleep(0.5)
+            element = self.wait.until(ec.visibility_of_element_located(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             element.clear()
-            element.send_keys(value)
+            element.send_keys(str(value))
         except StaleElementReferenceException:
-            element = self.wait.until(ec.element_to_be_clickable(locator))
+            element = self.wait.until(ec.visibility_of_element_located(locator))
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             element.clear()
-            element.send_keys(value)
+            element.send_keys(str(value))
         except TimeoutException:
             raise Exception(f"Timeout : Unable to enter value in: {locator}")
 
@@ -126,11 +130,11 @@ class BasePage:
         
 
     def navigate_to(self, locator):
-        self.wait.until(ec.element_to_be_clickable(locator)).click()
+        self.click_on(locator)
 
     def redirect_to(self, locator1, locator2):
-        self.wait.until(ec.element_to_be_clickable(locator1)).click()
-        self.wait.until(ec.element_to_be_clickable(locator2)).click()
+        self.click_on(locator1)
+        self.click_on(locator2)
         # self.hover_on_logo()
 
     
@@ -148,12 +152,12 @@ class BasePage:
     
     def verify_value_on_table(self, element_name: str) -> bool:
         try:
-            self.log.info(f"Validating '{element_name}' in table.")
             self.search(element_name)
             locator = By.XPATH, f"//tbody[@class='p-datatable-tbody']//tr//td//ngb-highlight//span[normalize-space()='{element_name}']"
 
             try:
                 self.wait.until(ec.presence_of_element_located(locator))
+                self.log.info(f"{element_name} is present on table.")
             except TimeoutException:
                 self.log.warning(f"'{element_name}' NOT found in table.")
                 return False
@@ -181,6 +185,7 @@ class BasePage:
 
     def _click_with_fallback(self, element):
         try:
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             element.click()
         except (ElementClickInterceptedException, StaleElementReferenceException):
             self.driver.execute_script("arguments[0].click();", element)
@@ -208,44 +213,8 @@ class BasePage:
         except TimeoutException:
             raise Exception(f"Dropdown option '{option}' not found")
         
-    # def verify_value_on_table(self, element_name):
-    #     try:
-    #         self.log.info(f"Validating the {element_name} in list table.")
-    #         self.search(element_name)
-    #         time.sleep(1)
-    #         elements = self.driver.find_elements\
-    #             (By.XPATH, f"//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight[normalize-space()='{element_name}']")
-    #         # self.log.info(f"Elements found count: {len(elements)}")
 
-    #         if len(elements) > 0:
-    #             self.log.info(f"{element_name} exists in table")
-    #             return True
-    #         else:
-    #             self.log.warning(f"{element_name} NOT found in table")
-    #             return False    
-    #     except Exception as e:
-    #         self.log.error(f"{element_name} is not dispalyed on the list table. : {str(e)}")
-    #         return "Element not found"
-
-    # def verify_value_on_table(self, element_name: str):
-    #     try:
-    #         self.log.info(f"Validating the {element_name} in list table.")
-
-    #         xpath = f"//tbody[@class='p-datatable-tbody']//tr/td[2]//ngb-highlight[normalize-space()='{element_name}']"
-    #         self.log.info(f"XPath: {xpath}")
-
-    #         # Print all matching elements count
-    #         elements = self.driver.find_elements(By.XPATH, xpath)
-    #         self.log.info(f"Elements found count: {len(elements)}")
-    #         element = self.wait.until(
-    #             ec.visibility_of_element_located((By.XPATH, xpath))
-    #         )
-
-    #         return element.text.strip() == element_name
-
-    #     except Exception as e:
-    #         self.log.error(f"Exception: {str(e)}")
-    #         return False
+        
 
 
     
