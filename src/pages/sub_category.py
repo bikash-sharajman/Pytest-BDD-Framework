@@ -1,4 +1,4 @@
-from src.locators.base_file import BasePage
+from src.pages.base_file import BasePage
 from src.locators.common_locators import commonelements
 from src.locators.subcat_mstr_locators import subcategory_elements
 from selenium.webdriver.support import expected_conditions as ec
@@ -19,7 +19,7 @@ class SubCategoryPage(BasePage):
             url = self.driver.current_url
             if "subcategory-master" not in url.lower():
                 self.click_on(commonelements.overview_dashboard)
-                self.redirect_to(commonelements.master_menu, commonelements.sub_category_master)
+                self.redirect_to_master_module(commonelements.sub_category_master)
                 self.wait.until(ec.url_contains("subcategory"))
                 self.log.info("User is redirected to subcategory master page.")
             else:
@@ -39,21 +39,10 @@ class SubCategoryPage(BasePage):
             self.click_on(commonelements.modal_save_button)
             self.log.info(f"{sub_category_name} created successfully.")
             return "added"
-        except TimeoutException as e:
-            msg = f"TimeoutException in create_new_subcategory: {e}"
-            print(msg)
-            return msg
-        except StaleElementReferenceException as e:
-            msg = f"StaleElementReferenceException in create_new_subcategory: {e}"
-            print(msg)
-            return msg
-        except ElementNotInteractableException as e:
-            msg = f"ElementNotInteractableException in create_new_subcategory: {e}"
-            print(msg)
-            return msg
-        except NoSuchElementException as e:
-            msg = f"NoSuchElementException in create_new_subcategory: {e}"
-            print(msg)
+        except (TimeoutException, StaleElementReferenceException,
+                ElementNotInteractableException, NoSuchElementException) as e:
+            msg = f"error: {type(e).__name__} in update_project: {e}"
+            self.log.error(msg)
             return msg
 
     def update_subcategory(self, search_subcat, category_option=None, sub_category_name=None):
@@ -80,18 +69,11 @@ class SubCategoryPage(BasePage):
                     self.enter_value(subcategory_elements.subCat_input, sub_category_name)
                 self.click_on(commonelements.modal_save_button)
                 return "added"
-        except TimeoutException as e:
-            self.log.error(f"TimeoutException in create_new_make: {e}")
-            return e
-        except StaleElementReferenceException as e:
-            self.log.error(f"StaleElementReferenceException in create_new_make: {e}")
-            return e
-        except ElementNotInteractableException as e:
-            self.log.error(f"ElementNotInteractableException in create_new_make: {e}")
-            return e
-        except NoSuchElementException as e:
-            self.log.error(f"NoSuchElementException in create_new_make: {e}")
-            return e
+        except (TimeoutException, StaleElementReferenceException,
+                ElementNotInteractableException, NoSuchElementException) as e:
+            msg = f"error: {type(e).__name__} in update_project: {e}"
+            self.log.error(msg)
+            return msg
 
     def delete_subcategory(self, sub_category_name, category_option="Demo category"):
         try:
@@ -117,15 +99,8 @@ class SubCategoryPage(BasePage):
                 self.click_on(commonelements.delete_icon)
                 self.click_on(commonelements.delete_button)
                 return "removed"
-        except TimeoutException as e:
-            self.log.error(f"TimeoutException in create_new_make: {e}")
-            return e
-        except StaleElementReferenceException as e:
-            self.log.error(f"StaleElementReferenceException in create_new_make: {e}")
-            return e
-        except ElementNotInteractableException as e:
-            self.log.error(f"ElementNotInteractableException in create_new_make: {e}")
-            return e
-        except NoSuchElementException as e:
-            self.log.error(f"NoSuchElementException in create_new_make: {e}")
-            return e
+        except (TimeoutException, StaleElementReferenceException,
+                ElementNotInteractableException, NoSuchElementException) as e:
+            msg = f"error: {type(e).__name__} in update_project: {e}"
+            self.log.error(msg)
+            return msg

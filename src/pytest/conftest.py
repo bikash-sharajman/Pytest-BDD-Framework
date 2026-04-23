@@ -2,16 +2,18 @@ import pytest
 from selenium.webdriver.support import expected_conditions as ec
 from src.initialization.driver_initialization import di
 from src.initialization.config_reader import confr
-from src.locators.base_file import BasePage
+from src.pages.base_file import BasePage
 from src.pages.login import Login
 from src.pages.category import CategoryPage
 from src.pages.make import MakePage
 from src.pages.sub_category import SubCategoryPage
 from src.pages.project_management_page import ProjectManagement
+from src.pages.warehouse import WarehousePage
+from src.pages.model import Model
 from src.utils.logger import get_logger
 
 
-class Conftest:
+class PageObjects:
     def __init__(self, driver, wait):
         self.driver = driver
         self.wait = wait
@@ -23,21 +25,25 @@ class Conftest:
         self.log = get_logger()
         # self.take_screenshot = ss.take_screenshot(driver)
         self.project_page = ProjectManagement(driver, wait)
+        self.warehouse_page = WarehousePage(driver, wait)
+        self.model_page = Model(driver, wait)
         
-base_url = confr.get_baseurl()
-url = f"{base_url}/login"
+_base_url = confr.get_baseurl()
+_url = f"{_base_url}/login"
     
 @pytest.fixture(scope="function")
 def setup():
     driver, wait = di.setup_driver()
-    driver.get(url)
-    conftest = Conftest(driver, wait)
-    yield conftest
+    driver.get(_url)
+    object = PageObjects(driver, wait)
+    
+    yield object
+    
     driver.quit()
 
 
 @pytest.fixture(autouse=True)
-def login_before_each_test(setup, request):
+def before_test(setup, request):
     if request.node.get_closest_marker("no_login"):
         yield
         return

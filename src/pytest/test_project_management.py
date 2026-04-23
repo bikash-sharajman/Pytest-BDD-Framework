@@ -35,11 +35,12 @@ def test_add_new_project(setup):
     conftest = setup
     result = conftest.project_page.create_new_project(project_data)
     if "exist" in result.lower():
-        print(result)
-        assert True
+        conftest.log.warning("Project already exist on the table, skipping the add new project steps.")
+        return
     elif "added" in result.lower():
+        conftest.log.warning("Project successfully added into the system and user gets the privilege for the project. Validating toaster message.")
         toaster = conftest.base_page.get_toaster_message()
-        assert "User added to Project Successfully" in toaster, pytest.fail(f"Expected toaster not displayed, but got {toaster}")
+        assert "User added to Project Successfully" in toaster, f"Expected toaster not displayed, but got {toaster}"
     else:
         pytest.fail(f"Unexpected result from create_new_project: {result}")
 
@@ -61,9 +62,14 @@ def test_update_project(setup):
     elif "added" in result.lower():
         toaster = conftest.base_page.get_toaster_message()
         conftest.log.error(toaster)
-        assert "Project added Successfully" in toaster, pytest.fail(f"Expected toaster not displayed, but got {toaster}")
+        assert "Project added Successfully" in toaster, f"Expected toaster not displayed, but got {toaster}"
     else:
         pytest.fail(f"Unexpected result from update_project: {result}")
+        
+
+@pytest.mark.usefixtures("setup")
+def test_add_project_unit_details():
+    pass
 
 
     

@@ -4,7 +4,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
-from src.locators.base_file import BasePage
+from pages.base_file import BasePage
 from src.pages.make import MakePage
 from src.initialization.config_reader import confr
 from src.locators.common_locators import commonelements

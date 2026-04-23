@@ -1,4 +1,5 @@
 import time
+import inspect
 from src.initialization.config_reader import confr
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -62,11 +63,8 @@ class BasePage:
     def click_on(self, locator):
         try:
             element = self.wait.until(ec.element_to_be_clickable(locator))
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             element.click()
         except (ElementClickInterceptedException, StaleElementReferenceException):
-            element = self.wait.until(ec.presence_of_element_located(locator))
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             self.driver.execute_script("arguments[0].click();", element)
         except TimeoutException:
             raise Exception(f"Element not clickable: {locator}")
@@ -78,15 +76,14 @@ class BasePage:
 
     def enter_value(self, locator, value:str):
         try:
-            element = self.wait.until(ec.visibility_of_element_located(locator))
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+            element = self.wait.until(ec.element_to_be_clickable(locator))
+            time.sleep(0.5)
             element.clear()
-            element.send_keys(str(value))
+            element.send_keys(value)
         except StaleElementReferenceException:
-            element = self.wait.until(ec.visibility_of_element_located(locator))
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+            element = self.wait.until(ec.element_to_be_clickable(locator))
             element.clear()
-            element.send_keys(str(value))
+            element.send_keys(value)
         except TimeoutException:
             raise Exception(f"Timeout : Unable to enter value in: {locator}")
 
@@ -130,12 +127,51 @@ class BasePage:
         
 
     def navigate_to(self, locator):
-        self.click_on(locator)
+        self.wait.until(ec.element_to_be_clickable(locator)).click()
+          
 
-    def redirect_to(self, locator1, locator2):
-        self.click_on(locator1)
-        self.click_on(locator2)
-        # self.hover_on_logo()
+    def redirect_to_master_module(self, locator):
+        try:
+            self.wait.until(ec.element_to_be_clickable(commonelements.master_menu)).click()
+        except TimeoutException:
+            self.log.warning("You are not authorized to access the master module.")
+            raise TimeoutException("You are not authorized to access the master module.")
+        try:
+            self.wait.until(ec.element_to_be_clickable(locator)).click()
+        except TimeoutException:
+            function_name = inspect.stack()[1].function
+            message = f"You are not authorized to access {function_name}"
+            self.log.warning(message)
+            raise TimeoutException(message)
+        
+    def redirect_to_management_module(self, locator):
+        try:
+            self.wait.until(ec.element_to_be_clickable(commonelements.management_menu)).click()
+        except TimeoutException:
+            self.log.warning("You are not authorized to access the management module.")
+            raise TimeoutException("You are not authorized to access the management module.")
+        try:
+            self.wait.until(ec.element_to_be_clickable(locator)).click()
+        except TimeoutException:
+            function_name = inspect.stack()[1].function
+            message = f"You are not authorized to access {function_name}"
+            self.log.warning(message)
+            raise TimeoutException(message)
+        
+    def redirect_to_asset_module(self, locator):
+        try:
+            self.wait.until(ec.element_to_be_clickable(commonelements.asset_menu)).click()
+        except TimeoutException:
+            self.log.warning("You are not authorized to access the asset module.")
+            raise TimeoutException("You are not authorized to access the asset module.")
+        try:
+            self.wait.until(ec.element_to_be_clickable(locator)).click()
+        except TimeoutException:
+            function_name = inspect.stack()[1].function
+            message = f"You are not authorized to access {function_name}"
+            self.log.warning(message)
+            raise TimeoutException(message)
+        
 
     
     def search(self, element: str):
@@ -152,16 +188,16 @@ class BasePage:
     
     def verify_value_on_table(self, element_name: str) -> bool:
         try:
+            self.log.info(f"Validating '{element_name}' in table.")
             self.search(element_name)
             locator = By.XPATH, f"//tbody[@class='p-datatable-tbody']//tr//td//ngb-highlight//span[normalize-space()='{element_name}']"
 
             try:
                 self.wait.until(ec.presence_of_element_located(locator))
-                self.log.info(f"{element_name} is present on table.")
             except TimeoutException:
                 self.log.warning(f"'{element_name}' NOT found in table.")
                 return False
-
+            
             elements = self.driver.find_elements(*locator)
 
             if elements:
@@ -179,16 +215,18 @@ class BasePage:
         try:
             toast = self.wait.until(ec.visibility_of_element_located(commonelements.toaster))
             # self.wait.until(lambda d: toast.text.strip() != "")
-            return toast.text.strip()
+            message = toast.text.strip()
+            self.log.info(f"Toaster message received: '{message}'")
+            return message
         except TimeoutException:
             raise Exception("Toaster message not visible")
 
     def _click_with_fallback(self, element):
         try:
-            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
             element.click()
         except (ElementClickInterceptedException, StaleElementReferenceException):
             self.driver.execute_script("arguments[0].click();", element)
+            self.log.info("JS click executed successfully")
     
     def select_dropdown_option(self, locator, option):
         try:
@@ -196,22 +234,26 @@ class BasePage:
             self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", dropdown)
             time.sleep(0.5)
             self._click_with_fallback(dropdown)
+            self.log.info("Dropdown is clicked.")
 
             option_locator = (By.XPATH, f"//p-selectitem//li//span[normalize-space()=\"{option}\"]",)
             option_element = self.wait.until(ec.visibility_of_element_located(option_locator))
             self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", option_element)
             time.sleep(0.5)
             self._click_with_fallback(option_element)
+            self.log.info(f"Dropdown option '{option}' selected successfully")
         except StaleElementReferenceException:
 
             dropdown = self.wait.until(ec.element_to_be_clickable(locator))
             dropdown.click()
+            self.log.info("Dropdown is clicked again")
 
             option = self.wait.until(ec.element_to_be_clickable(option_locator))
             option.click()
+            self.log.info("Dropdown option is clicked after retry.")
 
-        except TimeoutException:
-            raise Exception(f"Dropdown option '{option}' not found")
+        except (TimeoutException, NoSuchElementException) as e:
+            self.log.error(f"Dropdown option - {option} not found. Exception - {e}")
         
 
         

@@ -6,7 +6,11 @@ from src.locators.common_locators import commonelements
 from selenium.webdriver.support import expected_conditions as ec
 from src.utils.screenshot import take_screenshot
 
+
+
 pytestmark = pytest.mark.no_login
+
+
 
 @pytest.mark.smoke
 @pytest.mark.order(1)
@@ -39,29 +43,30 @@ def test_login_button_should_be_disabled_for_blank_fields(setup, email, password
     assert not login_btn.is_enabled()
     take_screenshot(conftest.driver)
     
-# @pytest.mark.smoke
-# @pytest.mark.order(5)
-# def test_the_login_page_deactivate_feature(setup):
-#     conftest = setup
-#     conftest.login_page.enter_email_id("testusergensom@gmail.com")
-#     conftest.login_page.enter_password("Incorrect@12345")
+@pytest.skip(reason = "it will block the account after 5 unsuccessful login attempts.")
+@pytest.mark.smoke
+@pytest.mark.order(5)
+def test_the_login_page_deactivate_feature(setup):
+    conftest = setup
+    conftest.login_page.enter_email_id("testusergensom@gmail.com")
+    conftest.login_page.enter_password("Incorrect@12345")
 
-#     toasters = []
-#     for i in range(5):
-#         conftest.login_page.click_on(loginelements.login_button)
-#         time.sleep(1)
-#         toaster = conftest.wait.until(ec.visibility_of_element_located(commonelements.toaster))
-#         toasters.append(toaster.text)
-#         take_screenshot(conftest.driver)
-#         toaster.click()
+    toasters = []
+    for i in range(5):
+        conftest.login_page.click_on(loginelements.login_button)
+        time.sleep(1)
+        toaster = conftest.wait.until(ec.visibility_of_element_located(commonelements.toaster))
+        toasters.append(toaster.text)
+        take_screenshot(conftest.driver)
+        toaster.click()
         
-#     for i in range(4):
-#         assert toasters[i] == "Incorrect username or password",\
-#             f"Mismatch at index {i}"
+    for i in range(4):
+        assert toasters[i] == "Incorrect username or password",\
+            f"Mismatch at index {i}"
             
-#     assert toasters[4] == \
-#     "Your account has been temporarily blocked. Please try again after one hour.",\
-#         "Account block message mismatch"
+    assert toasters[4] == \
+    "Your account has been temporarily blocked. Please try again after one hour.",\
+        "Account block message mismatch"
         
 @pytest.mark.smoke
 @pytest.mark.order(4)
