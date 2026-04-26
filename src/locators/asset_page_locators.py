@@ -6,7 +6,7 @@ import os
 
 class AssetModule:
     
-    file1 = os.path.abspath("C:\Users\SHARAJMAN\Downloads\4.png")
+    file1 = os.path.abspath(r"C:\Users\SHARAJMAN\Downloads\4.png")
     
     
     
